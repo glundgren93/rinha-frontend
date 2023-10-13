@@ -1,0 +1,36 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: Inter;
+}
+
+.content {
+  display: flex;
+  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  .header,
+  .subheader {
+    color: #000;
+    font-style: normal;
+    line-height: normal;
+  }
+
+  .header {
+    font-size: 48px;
+    font-weight: 700;
+  }
+
+  .subheader {
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  #json-tree {
+    padding: 0;
+    margin: 0;
+  }
+}
