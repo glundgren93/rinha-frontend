@@ -22,10 +22,18 @@ self.addEventListener("message", (event) => {
     orphanedData = remainder;
 
     // Now process 'validData' as before...
+    parseJson(validData);
     const prettifiedJson = JSON.stringify(JSON.parse(validData), null, 2);
     event.ports[0].postMessage({ prettifiedJson: prettifiedJson });
   }
 });
+
+function parseJson(json) {
+  const parsed = JSON.parse(json);
+
+  const entries = Object.keys(parsed);
+  console.log(entries);
+}
 
 function splitValidJSON(dataStr) {
   // Look for the last complete JSON structure in dataStr.

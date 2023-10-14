@@ -32,5 +32,18 @@ body {
   #json-tree {
     padding: 0;
     margin: 0;
+
+    .key {
+      font-weight: bold;
+      color: blue;
+    }
+
+    .value {
+      color: green;
+    }
+
+    .entry {
+      margin-left: 20px;
+    }
   }
 }
