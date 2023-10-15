@@ -4,6 +4,14 @@ body {
   font-family: Inter;
 }
 
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+}
+
 .content {
   display: flex;
   gap: 24px;
@@ -28,22 +36,51 @@ body {
     font-size: 24px;
     font-weight: 400;
   }
+}
 
-  #json-tree {
-    padding: 0;
-    margin: 0;
+#json-tree {
+  padding: 0;
+  margin: 0;
+  min-height: 100dvh;
+  display: none;
+  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 600px;
 
-    .key {
-      font-weight: bold;
-      color: blue;
-    }
+  .key {
+    color: #4e9590;
+  }
 
-    .value {
-      color: green;
-    }
+  .value {
+    color: black;
+  }
 
-    .entry {
-      margin-left: 20px;
-    }
+  .entry {
+    margin-left: 20px;
+  }
+
+  .node {
+    width: 100%;
+  }
+
+  .array-node .leaf {
+    position: relative;
+  }
+
+  .array-node .leaf::before {
+    content: "";
+    position: absolute;
+    left: -15px;
+    top: 0;
+    bottom: 0;
+    border-left: 1px solid #BFBFBF;
+  }
+
+  .node,
+  .array-node,
+  .leaf {
+    margin-left: 20px;
   }
 }
