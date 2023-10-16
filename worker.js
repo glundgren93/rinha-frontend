@@ -5,19 +5,26 @@ onmessage = async function (event) {
   switch (event.data.action) {
     case "processTree":
       console.time("processTree");
-      allNodes = await decode(event.data.tree);
-      generatorInstance = treeGenerator(allNodes);
+      generatorInstance = await decode(event.data.tree);
       console.timeEnd("processTree");
       postMessage({
         action: "processedTree",
       });
       break;
     case "getNextChunk":
-      const nextChunk = await generatorInstance.next();
+      let chunk = [];
+      let done = false;
+      for (let i = 0; i < event.data.chunkSize && !done; i++) {
+        const nextItem = await generatorInstance.next();
+        if (!nextItem.done) {
+          chunk.push(nextItem.value);
+        }
+        done = nextItem.done;
+      }
       postMessage({
         action: "newChunk",
-        chunk: nextChunk.value,
-        done: nextChunk.done,
+        chunk: chunk.join(""),
+        done: done,
       });
       break;
   }
@@ -27,39 +34,26 @@ async function decode(arrayBuffer) {
   const decoder = new TextDecoder();
   const jsonStr = decoder.decode(arrayBuffer);
 
+  console.time("recurseTree");
   const parsedJson = await recurseTree(JSON.parse(jsonStr));
+  console.timeEnd("recurseTree");
   return parsedJson;
 }
 
-async function* treeGenerator(tree, chunkSize = 10) {
-  const allNodes = tree;
-  let index = 0;
-
-  while (index < allNodes.length) {
-    yield allNodes.slice(index, index + chunkSize);
-    index += chunkSize;
-  }
-}
-
-async function recurseTree(tree) {
-  const tasks = Object.entries(tree).map(async ([key, value]) => {
+function* recurseTree(tree) {
+  for (let [key, value] of Object.entries(tree)) {
     if (value && typeof value === "object" && !Array.isArray(value)) {
-      const nested = await recurseTree(value);
-      return `<div class="node"><div class="key">${key}:</div>\n<div class="leaf">${nested.join(
-        "\n"
-      )}</div></div>`;
+      yield `<div class="node"><div class="key">${key}:</div>`;
+      yield* recurseTree(value);
+      yield `</div>`;
     } else if (typeof value === "object" && Array.isArray(value)) {
-      const nested = await recurseTree(value);
-      return `<div class="array-node"><div class="key">${key}:[\n${nested.join(
-        "\n"
-      )}]</div></div>`;
+      yield `<div class="array-node"><div class="key">${key}:[`;
+      yield* recurseTree(value);
+      yield `]</div></div>`;
     } else {
-      return `<div class="leaf"><span class="key">${key}:</span> <span class="value">${value}</span></div>`;
+      yield `<div class="property"><span class="key">${key}:</span> <span class="value">${value}</span></div>`;
     }
-  });
-
-  const nodes = await Promise.all(tasks);
-  return nodes;
+  }
 }
 
 function formatDisplayValue(value) {

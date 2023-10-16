@@ -27,19 +27,17 @@ function handleFileSubmission(event) {
 
 myWorker.onmessage = function (event) {
   if (event.data.action === "processedTree") {
-    myWorker.postMessage({ action: "getNextChunk" });
+    myWorker.postMessage({ action: "getNextChunk", chunkSize: 1000 });
   }
   if (event.data.action === "newChunk") {
-    if (!event.data.done) {
-      renderData(event.data.chunk);
-    }
+    renderData(event.data.chunk);
     // Optionally, handle the 'done' state. E.g., hide a loading spinner, display a message, etc.
   }
 };
 
 window.addEventListener("scroll", () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-    myWorker.postMessage({ action: "getNextChunk" });
+    myWorker.postMessage({ action: "getNextChunk", chunkSize: 1000 });
   }
 });
 
@@ -47,5 +45,5 @@ function renderData(chunk) {
   const container = document.getElementById("json-tree");
   container.style.display = "flex";
   document.querySelector(".content").style.display = "none";
-  container.innerHTML += chunk.join("\n");
+  container.innerHTML += chunk;
 }
