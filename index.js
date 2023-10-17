@@ -1,3 +1,5 @@
+let fileName = "";
+
 document.getElementById("load-json").addEventListener("click", openDialog);
 document
   .getElementById("json-file")
@@ -12,6 +14,7 @@ function handleFileSubmission(event) {
   const file = event.target.files[0];
 
   if (file) {
+    fileName = file.name;
     const reader = new FileReader();
 
     reader.onload = function (event) {
@@ -42,8 +45,12 @@ window.addEventListener("scroll", () => {
 });
 
 function renderData(chunk) {
+  const fileNameElement = document.getElementById("file-name");
   const container = document.getElementById("json-tree");
-  container.style.display = "flex";
   document.querySelector(".content").style.display = "none";
+
+  container.style.display = "flex";
+  fileNameElement.style.display = "block";
+  fileNameElement.innerText = fileName;
   container.innerHTML += chunk;
 }

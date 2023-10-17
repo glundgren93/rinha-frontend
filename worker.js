@@ -33,27 +33,31 @@ onmessage = async function (event) {
 async function decode(arrayBuffer) {
   const decoder = new TextDecoder();
   const jsonStr = decoder.decode(arrayBuffer);
-
-  console.time("recurseTree");
-  const parsedJson = await recurseTree(JSON.parse(jsonStr));
-  console.timeEnd("recurseTree");
-  return parsedJson;
+  const parsedJson = JSON.parse(jsonStr);
+  const parentType = Array.isArray(parsedJson) ? "array" : "object";
+  const tree = await recurseTree(parsedJson, parentType);
+  return tree;
 }
 
-function* recurseTree(tree) {
+function* recurseTree(tree, parentType) {
+  const parentContainer =
+    parentType === "array" ? '<div class="array-node">' : '<div class="node">';
+
+  yield parentContainer;
   for (let [key, value] of Object.entries(tree)) {
     if (value && typeof value === "object" && !Array.isArray(value)) {
-      yield `<div class="node"><div class="key">${key}:</div>`;
-      yield* recurseTree(value);
+      yield `<div class="key">${key}:`;
+      yield* recurseTree(value, "object");
       yield `</div>`;
     } else if (typeof value === "object" && Array.isArray(value)) {
-      yield `<div class="array-node"><div class="key">${key}:[`;
-      yield* recurseTree(value);
-      yield `]</div></div>`;
+      yield `<div class="key">${key}:[`;
+      yield* recurseTree(value, "array");
+      yield `]</div>`;
     } else {
-      yield `<div class="node"><div class="property"><span class="key">${key}:</span> <span class="value">${value}</span></div></div>`;
+      yield `<div class="property"><span class="key">${key}:</span> <span class="value">${value}</span></div>`;
     }
   }
+  yield "</div>";
 }
 
 function formatDisplayValue(value) {
