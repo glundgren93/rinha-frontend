@@ -51,7 +51,7 @@ function* recurseTree(tree) {
       yield* recurseTree(value);
       yield `]</div></div>`;
     } else {
-      yield `<div class="property"><span class="key">${key}:</span> <span class="value">${value}</span></div>`;
+      yield `<div class="node"><div class="property"><span class="key">${key}:</span> <span class="value">${value}</span></div></div>`;
     }
   }
 }
